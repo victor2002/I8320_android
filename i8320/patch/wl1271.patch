@@ -1,0 +1,68 @@
+From cc354412c9b925879f4ee7485c8b844348fe3a78 Mon Sep 17 00:00:00 2001
+From: mephistophilis <mephistophilis@gmail.com>
+Date: Wed, 16 Feb 2011 16:10:37 +0800
+Subject: [PATCH] wlan for i8320
+
+Change-Id: I3c4609c57c3bbbc2a20df9817e9058efee7e302b
+---
+ .../hw/host_platform_zoom2/linux/host_platform.h   |    7 +++++--
+ wl1271/platforms/os/linux/omap3430.bash            |    6 ++++++
+ wl1271/stad/build/linux/common.inc                 |    2 +-
+ 3 files changed, 12 insertions(+), 3 deletions(-)
+ create mode 100644 wl1271/platforms/os/linux/omap3430.bash
+
+diff --git a/wl1271/platforms/hw/host_platform_zoom2/linux/host_platform.h b/wl1271/platforms/hw/host_platform_zoom2/linux/host_platform.h
+index 482797c..14d9674 100644
+--- a/wl1271/platforms/hw/host_platform_zoom2/linux/host_platform.h
++++ b/wl1271/platforms/hw/host_platform_zoom2/linux/host_platform.h
+@@ -46,6 +46,7 @@
+ 
+ #define OMAP_HSMMC3_BASE			0x480AD000	//0x480b4000
+ 
++#if 0
+ #define CONTROL_PADCONF_CAM_D1			0x48002118   /* WLAN_EN */
+ #define CONTROL_PADCONF_MCBSP1_CLKX		0x48002198   /* WLAN_IRQ */
+ 
+@@ -57,10 +58,12 @@
+ #define CONTROL_PADCONF_MMC3_DAT2		0x480025E8    /* mmc3_dat2 */
+ #define CONTROL_PADCONF_MMC3_DAT3		0x480025E0    /* mmc3_dat3 */
+ 
+-
+-
+ #define PMENA_GPIO                      101
+ #define IRQ_GPIO                        162
++#endif
++
++#define PMENA_GPIO                      160
++#define IRQ_GPIO                        21
+ 
+ #define MUXMODE_3                       3
+ #define TNETW_IRQ                       (OMAP_GPIO_IRQ(IRQ_GPIO))
+diff --git a/wl1271/platforms/os/linux/omap3430.bash b/wl1271/platforms/os/linux/omap3430.bash
+new file mode 100644
+index 0000000..bbe3163
+--- /dev/null
++++ b/wl1271/platforms/os/linux/omap3430.bash
+@@ -0,0 +1,6 @@
++#export CROSS_COMPILE=arm-none-linux-gnueabi-
++#export ARCH=arm
++export PROPRIETARY_SDIO=y
++export HOST_PLATFORM=zoom2
++export DEBUG=y
++export KERNEL_DIR=~/workspace/i8320/i8320kernel
+diff --git a/wl1271/stad/build/linux/common.inc b/wl1271/stad/build/linux/common.inc
+index d355e77..2e08520 100644
+--- a/wl1271/stad/build/linux/common.inc
++++ b/wl1271/stad/build/linux/common.inc
+@@ -186,7 +186,7 @@ endif
+ ##
+ ##
+ 
+-EXTRA_CFLAGS += -fsigned-char -Werror
++EXTRA_CFLAGS += -fsigned-char
+ EXTRA_CFLAGS += -D __LINUX__ -DTI_RANDOM_DEFAULT_MAC
+ EXTRA_CFLAGS += $(DK_DEFINES)
+ EXTRA_CFLAGS += $(PFORM_DEFINES)
+-- 
+1.7.4.1
+

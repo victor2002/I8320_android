@@ -1,0 +1,35 @@
+From 6e2dcfaa1c77fee90b027ca1c2e93724b1a38645 Mon Sep 17 00:00:00 2001
+From: mephistophilis <mephistophilis@gmail.com>
+Date: Mon, 28 Feb 2011 13:47:09 +0800
+Subject: [PATCH] fix ums
+
+Change-Id: I5219de7492f849b1b9cdcce8189768dc99954713
+---
+ VolumeManager.cpp |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/VolumeManager.cpp b/VolumeManager.cpp
+index 8a70c37..24e9784 100644
+--- a/VolumeManager.cpp
++++ b/VolumeManager.cpp
+@@ -806,7 +806,7 @@ int VolumeManager::shareVolume(const char *label, const char *method) {
+              sizeof(nodepath), "/dev/block/vold/%d:%d",
+              MAJOR(d), MINOR(d));
+ 
+-    if ((fd = open("/sys/devices/platform/usb_mass_storage/lun0/file",
++    if ((fd = open("/sys/devices/platform/musb_hdrc/gadget/lun0/file",
+                    O_WRONLY)) < 0) {
+         SLOGE("Unable to open ums lunfile (%s)", strerror(errno));
+         return -1;
+@@ -849,7 +849,7 @@ int VolumeManager::unshareVolume(const char *label, const char *method) {
+              sizeof(nodepath), "/dev/block/vold/%d:%d",
+              MAJOR(d), MINOR(d));
+ 
+-    if ((fd = open("/sys/devices/platform/usb_mass_storage/lun0/file", O_WRONLY)) < 0) {
++    if ((fd = open("/sys/devices/platform/musb_hdrc/gadget/lun0/file", O_WRONLY)) < 0) {
+         SLOGE("Unable to open ums lunfile (%s)", strerror(errno));
+         return -1;
+     }
+-- 
+1.7.4.1
+
