@@ -163,15 +163,14 @@ ALSAMixer::ALSAMixer()
 {
     int err;
 
-    initMixer (&mMixer[SND_PCM_STREAM_PLAYBACK], "AndroidPlayback");
-    initMixer (&mMixer[SND_PCM_STREAM_CAPTURE], "AndroidRecord");
+    initMixer (&mMixer[SND_PCM_STREAM_PLAYBACK], "AndroidOut");
+    initMixer (&mMixer[SND_PCM_STREAM_CAPTURE], "AndroidIn");
 
     snd_mixer_selem_id_t *sid;
     snd_mixer_selem_id_alloca(&sid);
 
     for (int i = 0; i <= SND_PCM_STREAM_LAST; i++) {
 
-        if (!mMixer[i]) continue;
 
         mixer_info_t *info = mixerMasterProp[i].mInfo = new mixer_info_t;
 

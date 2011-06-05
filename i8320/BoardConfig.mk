@@ -1,5 +1,4 @@
 # The generic product target doesn't have any hardware-specific pieces.
-USE_CAMERA_STUB := true
 TARGET_BOARD_PLATFORM := omap3
 
 TARGET_NO_BOOTLOADER := true
@@ -22,11 +21,29 @@ TARGET_GLOBAL_CPPFLAGS += -mtune=cortex-a8
 ANDROID_ARM_LINKER := true
 ARCH_ARM_HAVE_TLS_REGISTER := true
 
+#ALSA_Sound
 BOARD_USES_ALSA_AUDIO := true
 BUILD_WITH_ALSA_UTILS := true
 ALSA_DEFAULT_SAMPLE_RATE := 44100
+
+#Camera
 BOARD_USES_TI_CAMERA_HAL := true
-#HARDWARE_OMX := true
+USE_CAMERA_STUB := true
+#BOARD_USE_FROYO_LIBCAMERA := true
+#BOARD_USE_YUV422I_DEFAULT_COLORFORMAT := true
+HARDWARE_OMX := true
+
+ifdef HARDWARE_OMX
+JPEG := true
+OMX_VENDOR := ti
+OMX_VENDOR_INCLUDES := \
+   hardware/ti/omx/system/src/openmax_il/omx_core/inc \
+   hardware/ti/omx/image/src/openmax_il/jpeg_enc/inc
+OMX_VENDOR_WRAPPER := TI_OMX_Wrapper
+BOARD_OPENCORE_LIBRARIES := libOMX_Core
+BOARD_OPENCORE_FLAGS := -DHARDWARE_OMX=1
+#BOARD_CAMERA_LIBRARIES := libcamera
+endif
 
 #BOARD_KERNEL_CMDLINE := console=null no_console_suspend g_android.product_id=0x1354 g_android.serial_number=Victor-I8320
 
@@ -49,9 +66,9 @@ WIFI_FIRMWARE_LOADER        := "wlan_loader"
 BOARD_HAVE_BLUETOOTH := true
 
 # FM
-BUILD_FM_RADIO := true
-BOARD_HAVE_FM_ROUTING := true
-FM_CHR_DEV_ST := true
+#BUILD_FM_RADIO := true
+#BOARD_HAVE_FM_ROUTING := true
+#FM_CHR_DEV_ST := true
 
 WITH_JIT := true
 ENABLE_JSC_JIT := true

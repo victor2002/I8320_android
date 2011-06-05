@@ -42,6 +42,7 @@ static int s_device_close(hw_device_t*);
 static status_t s_init(alsa_device_t *, ALSAHandleList &);
 static status_t s_open(alsa_handle_t *, uint32_t, int);
 static status_t s_close(alsa_handle_t *);
+static status_t s_standby(alsa_handle_t *);
 static status_t s_route(alsa_handle_t *, uint32_t, int);
 
 static hw_module_methods_t s_module_methods = {
@@ -77,6 +78,7 @@ static int s_device_open(const hw_module_t* module, const char* name,
     dev->init = s_init;
     dev->open = s_open;
     dev->close = s_close;
+    dev->standby = s_standby;
     dev->route = s_route;
 
     *device = &dev->common;
@@ -95,7 +97,7 @@ static const int DEFAULT_SAMPLE_RATE = ALSA_DEFAULT_SAMPLE_RATE;
 
 static const char *devicePrefix[SND_PCM_STREAM_LAST + 1] = {
         /* SND_PCM_STREAM_PLAYBACK : */"AndroidPlayback",
-        /* SND_PCM_STREAM_CAPTURE  : */"AndroidRecord",
+        /* SND_PCM_STREAM_CAPTURE  : */"AndroidCapture",
 };
 
 static alsa_handle_t _defaultsOut = {
@@ -109,6 +111,7 @@ static alsa_handle_t _defaultsOut = {
     sampleRate  : DEFAULT_SAMPLE_RATE,
     latency     : 14512, //200000, // Desired Delay in usec
     bufferSize  : 640, //DEFAULT_SAMPLE_RATE / 5, // Desired Number of samples
+    mmap        : 0,    
     modPrivate  : 0,
 };
 
@@ -123,6 +126,7 @@ static alsa_handle_t _defaultsIn = {
     sampleRate  : AudioRecord::DEFAULT_SAMPLE_RATE,
     latency     : 1543500, //250000, // Desired Delay in usec
     bufferSize  : 12348, //2048, // Desired Number of samples
+    mmap        : 0,    
     modPrivate  : 0,
 };
 
@@ -237,7 +241,7 @@ status_t setHardwareParams(alsa_handle_t *handle)
         goto done;
     }
 
-    LOGV("Set %s PCM format to %s (%s)", streamName(handle), formatName, formatDesc);
+    LOGV("Set %s PCM format to %s (%s)", streamName(), formatName, formatDesc);
 
     err = snd_pcm_hw_params_set_channels(handle->handle, hardwareParams,
             handle->channels);
@@ -248,7 +252,7 @@ status_t setHardwareParams(alsa_handle_t *handle)
     }
 
     LOGV("Using %i %s for %s.", handle->channels,
-            handle->channels == 1 ? "channel" : "channels", streamName(handle));
+            handle->channels == 1 ? "channel" : "channels", streamName());
 
     err = snd_pcm_hw_params_set_rate_near(handle->handle, hardwareParams,
             &requestedRate, 0);
@@ -263,7 +267,7 @@ status_t setHardwareParams(alsa_handle_t *handle)
         LOGW("Requested rate (%u HZ) does not match actual rate (%u HZ)",
                 handle->sampleRate, requestedRate);
     else
-        LOGV("Set %s sample rate to %u HZ", streamName(handle), requestedRate);
+        LOGV("Set %s sample rate to %u HZ", stream, requestedRate);
 
 #ifdef DISABLE_HARWARE_RESAMPLING
     // Disable hardware re-sampling.
@@ -526,6 +530,25 @@ static status_t s_close(alsa_handle_t *handle)
     return err;
 }
 
+static status_t s_standby(alsa_handle_t *handle)
+{
+    status_t err = NO_ERROR;
+    snd_pcm_t *h = handle->handle;
+    handle->handle = 0;
+    LOGV("In omap3 standby\n");
+    if (h) {
+        snd_pcm_drain(h);
+        err = snd_pcm_close(h);
+        if (err)
+            LOGE("Failed closing ALSA stream: %s", snd_strerror(err));
+        LOGV("called drain&close\n");
+    }
+
+    ALSAControl control("hw:00");
+    control.set("Amp Enable", (unsigned int)1); // off
+   
+    return err;
+}
 
 static status_t s_route(alsa_handle_t *handle, uint32_t devices, int mode)
 {

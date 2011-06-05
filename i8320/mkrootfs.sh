@@ -23,8 +23,8 @@ function copy_modules()
     
     rm -rf $ANDROID/out/target/product/i8320/system/lib/modules/
     mkdir -p $ANDROID/out/target/product/i8320/system/lib/modules/
-    find $KERNELDIR/modules -name '*.ko' -exec cp {} $ANDROID/out/target/product/i8320/system/lib/modules/  \;
-    find $ANDROID/TI_Android_SGX_SDK/gfx_rel_es3.x_android -name '*.ko' -exec cp {} $ANDROID/out/target/product/i8320/system/lib/modules/  \;
+#    find $KERNELDIR/modules -name '*.ko' -exec cp {} $ANDROID/out/target/product/i8320/system/lib/modules/  \;
+#    find $ANDROID/TI_Android_SGX_SDK/gfx_rel_es3.x_android -name '*.ko' -exec cp {} $ANDROID/out/target/product/i8320/system/lib/modules/  \;
 }
 
 function create_rootfs()
@@ -39,7 +39,10 @@ function create_rootfs()
     cp -Rdpf $ANDROID/out/target/product/i8320/root/* $ANDROIDROOTFS/
     cp -Rdpf $ANDROID/out/target/product/i8320/system/* $ANDROIDROOTFS/system/
     cp -Rdpf $ANDROID/out/target/product/i8320/data/* $ANDROIDROOTFS/data/
-    
+    cp -Rdpf $ANDROID/device/samsung/i8320/system/* $ANDROIDROOTFS/system/
+    cp -Rdpf $ANDROID/device/samsung/i8320/lib/* $ANDROIDROOTFS/lib/
+    cp -Rdpf $ANDROID/device/samsung/i8320/*.rc $ANDROIDROOTFS/
+   
     echo "done."
     #chmod 777 -R ./android/system/usr/keychars
     #chmod 777 -R ./android/system/usr/keylayout

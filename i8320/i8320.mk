@@ -19,7 +19,7 @@ PRODUCT_PACKAGE_OVERLAYS += vendor/cyanogen/overlay/common
 $(call inherit-product, vendor/cyanogen/products/gsm.mk)
 
 # Include TI FM
-$(call inherit-product, vendor/cyanogen/products/ti_fm_radio.mk)
+#$(call inherit-product, vendor/cyanogen/products/ti_fm_radio.mk)
 
 # Pick up audio package
 include frameworks/base/data/sounds/AudioPackage2.mk
